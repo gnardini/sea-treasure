@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react'
 import useGameLogic, { getTreasureLevel } from '../logic/GameLogic'
+import useWindowDimensions from "../utils/useWindowDimensions";
 import './css/Game.css'
 
-function divideTreasures(treasures) {
+function divideTreasures(treasures, isMobile) {
+  const maxTilesPerRow = isMobile ? 4 : 10
   let treasuresPerLine = []
   let currentLine = []
 
   for (let i = 0; i < treasures.length; i++) {
-    if (currentLine.length < 10) {
-      currentLine.push(treasures[i])
+    if (currentLine.length < maxTilesPerRow) {
+      currentLine.push(treasures[i]);
     } else {
-      treasuresPerLine.push(currentLine)
-      treasuresPerLine.push([treasures[i]])
-      currentLine = []
+      treasuresPerLine.push(currentLine);
+      treasuresPerLine.push([treasures[i]]);
+      currentLine = [];
     }
   }
   if (currentLine.length > 0) {
@@ -37,11 +39,13 @@ function GameUI() {
     startGame,
   } = useGameLogic()
 
+  const { width } = useWindowDimensions()
+
   useEffect(() => {
     startGame()
   }, [])
 
-  const treasuresPerLine = divideTreasures(treasures)
+  const treasuresPerLine = divideTreasures(treasures, width < 480)
 
   return (
     <div className="container">
